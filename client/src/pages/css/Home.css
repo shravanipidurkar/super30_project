@@ -1,0 +1,80 @@
+/* Light blue background for the whole page */
+.home {
+    background-color: #ebf1ff;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Navbar styling */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ebf1ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-left {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .navbar-right .btn {
+    margin-left: 10px;
+    padding: 14px 28px;
+    border: none;
+    cursor: pointer;
+    background-color: #858788;
+    border-radius: 8px;
+    color:white;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  
+  
+  /* Main section layout */
+  .content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .content-left,
+  .content-right {
+    flex: 1;
+    padding: 1rem;
+  }
+  
+  .home-image {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .content-left h1 {
+    font-family:  'Oswald', sans-serif;
+    font-size: 5rem;
+    text-transform: uppercase;
+    font-weight: 790;
+    margin-bottom: 3rem;
+    letter-spacing: 1px;
+  }
+  
+  .content-left p {
+    font-size: 1.1rem;
+    line-height: 1.3;
+    margin-bottom: 3rem;
+  }
+  
+  .btn.get-started {
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 14px 28px;
+    background-color: #0056b3;
+    border-radius: 8px;
+    color:white
+  }
+  

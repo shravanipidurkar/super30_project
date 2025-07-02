@@ -1,0 +1,70 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: nowrap;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Left: Logo + Store Name + Profile */
+.header-section.left {
+  gap: 20px;
+  flex: 1;
+  min-width: 280px;
+}
+
+/* Center: Nav links */
+.header-section.center {
+  flex: 2;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* Right: Social icons + Search */
+.header-section.right {
+  flex: 1;
+  justify-content: flex-end;
+  gap: 16px;
+  min-width: 280px;
+}
+
+.store-logo {
+  height: 44px;
+  width: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.store-title h2 {
+  font-size: 1.25rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.profile-icon {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Search styling */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-box input {
+  padding: 5px 10px;
+  font-size: 14px;
+  width: 140px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
