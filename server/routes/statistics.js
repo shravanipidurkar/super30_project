@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-
+const pool = require('../routes/db');
 // DB connection
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'e-commerce-db1',
-});
+// const db = mysql.createConnection({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'e-commerce-db1',
+// });
 
 // GET /api/statistics?storeId=201 — Total stats
 router.get('/', (req, res) => {

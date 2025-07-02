@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
+const pool = require('../routes/db');
 
 // DB pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'e-commerce-db1',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// const pool = mysql.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'e-commerce-db1',
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0
+// });
 
 // --- Customer Signup ---
 router.post('/signup', async (req, res) => {

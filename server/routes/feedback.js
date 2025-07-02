@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
-
+const pool = require('../routes/db');
 // MySQL connection
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'e-commerce-db1',
-});
+// const db = mysql.createConnection({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'e-commerce-db1',
+// });
 
 // Middleware to verify JWT and attach user info
 function authenticateToken(req, res, next) {

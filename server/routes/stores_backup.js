@@ -5,17 +5,18 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const pool = require('../routes/db');
 
 // ✅ MySQL connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'e-commerce-db1',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-}).promise();
+// const pool = mysql.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'e-commerce-db1',
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0,
+// }).promise();
 
 // ✅ Ensure uploads directory exists
 const uploadDir = path.join(__dirname, '../uploads');

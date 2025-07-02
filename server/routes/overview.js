@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2/promise');
-
+const pool = require('../routes/db');
 // Create DB pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'e-commerce-db1',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// const pool = mysql.createPool({
+//   host: 'localhost',
+//   user: 'root',
+//   password: '',
+//   database: 'e-commerce-db1',
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0
+// });
 
 router.get('/:storeId', async (req, res) => {
   const { storeId } = req.params;
