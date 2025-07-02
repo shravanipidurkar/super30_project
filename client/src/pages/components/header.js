@@ -11,7 +11,7 @@ const Header = ({ cartCount = 0, searchQuery, setSearchQuery, store }) => {
       <div className="header-section left">
         {store?.logo ? (
           <img
-            src={`${process.env.REACT_APP_SERVER_URL}${store.logo}`}
+            src={`http://localhost:5000${store.logo}`}
             alt="store logo"
             className="store-logo"
           />
