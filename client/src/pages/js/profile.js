@@ -20,7 +20,7 @@ const CustomerProfile = () => {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/customer/profile', {
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/customer/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCustomer(response.data.customer);

@@ -23,7 +23,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, {
         email,
         password,
         rememberMe
@@ -36,12 +36,13 @@ const Login = () => {
       localStorage.setItem('storeId', user.storeId);      // ✅ required for store filtering
       localStorage.setItem('userType', user.userType);    // optional
       localStorage.setItem('userEmail', user.email);      // optional
-
+      console.log(process.env.REACT_APP_SERVER_URL);
       alert('Login successful!');
       navigate('/AdminOverview');
     } catch (err) {
       console.error('Login error:', err.response?.data);
       setError(err.response?.data?.message || 'Invalid email or password');
+      console.log(process.env.REACT_APP_SERVER_URL);
     } finally {
       setLoading(false);
     }

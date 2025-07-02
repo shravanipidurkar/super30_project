@@ -74,7 +74,7 @@ setEmail(storedEmail);
 
 
   try {
-    const res = await fetch('http://localhost:5000/api/stores_backup', {
+    const res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/stores_backup`, {
       method: 'POST',
       body: formData,
     });
