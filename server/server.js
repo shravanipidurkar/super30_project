@@ -12,7 +12,7 @@ const overview = require('./routes/overview');
 const stores_backup=require('./routes/stores_backup');
 const customerAuthRoutes = require('./routes/cus_auth');
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
