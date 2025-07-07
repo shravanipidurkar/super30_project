@@ -55,7 +55,7 @@ ORDER BY c.date_joined DESC;
 
   `;
 
-  db.query(sql, [store_id], (err, results) => {
+  pool.query(sql, [store_id], (err, results) => {
     if (err) {
       console.error('Error fetching feedback:', err);
       return res.status(500).json({ error: 'Internal server error' });
@@ -82,7 +82,7 @@ router.post('/add', authenticateToken, (req, res) => {
 
   const values = [customer_name, email, phone_number, address, password, store_id];
 
-  db.query(sql, values, (err, result) => {
+  pool.query(sql, values, (err, result) => {
     if (err) {
       console.error('Error inserting customer:', err);
       return res.status(500).json({ error: 'Database insert failed' });
@@ -97,7 +97,7 @@ router.get('/:id', authenticateToken, (req, res) => {
 
   const sql = `SELECT customer_id AS id, customer_name AS name, email, phone_number AS phone, address, date_joined FROM customers WHERE customer_id = ?`;
 
-  db.query(sql, [customerId], (err, results) => {
+  pool.query(sql, [customerId], (err, results) => {
     if (err) {
       console.error('Error fetching customer:', err);
       return res.status(500).json({ error: 'Internal server error' });

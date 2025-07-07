@@ -11,7 +11,7 @@ const pool = require('../routes/db');
 // });
 
 router.get('/', (req, res) => {
-  db.query('SELECT customer_id, customer_name FROM customers', (err, results) => {
+  pool.query('SELECT customer_id, customer_name FROM customers', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });

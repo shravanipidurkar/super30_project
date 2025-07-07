@@ -51,7 +51,7 @@ router.get('/', authenticateToken, (req, res) => {
     ORDER BY f.review_date DESC
   `;
 
-  db.query(sql, [store_id], (err, results) => {
+  pool.query(sql, [store_id], (err, results) => {
     if (err) {
       console.error('Error fetching feedback:', err);
       return res.status(500).json({ error: 'Internal server error' });

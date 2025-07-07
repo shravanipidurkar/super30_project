@@ -68,7 +68,7 @@ router.get('/', authenticateToken, (req, res) => {
       p.product_id
   `;
 
-  db.query(query, [store_id, store_id], (err, results) => {
+  pool.query(query, [store_id, store_id], (err, results) => {
     if (err) {
       console.error('Error fetching products with total_sold:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -82,7 +82,7 @@ router.get('/categories', authenticateToken, (req, res) => {
   const { store_id } = req.user;
 
   const query = `SELECT DISTINCT product_category AS name FROM products WHERE store_id = ?`;
-  db.query(query, [store_id], (err, results) => {
+  pool.query(query, [store_id], (err, results) => {
     if (err) {
       console.error('Error fetching categories:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -102,7 +102,7 @@ router.get('/category-counts', authenticateToken, (req, res) => {
     GROUP BY product_category
   `;
 
-  db.query(query, [store_id], (err, results) => {
+  pool.query(query, [store_id], (err, results) => {
     if (err) {
       console.error('Error fetching category counts:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -137,7 +137,7 @@ router.post('/add', authenticateToken, upload.single('image'), (req, res) => {
   console.log("🧾 New product received:", req.body);
 console.log("🖼️ Image info:", req.file);
 
-  db.query(query, values, (err, result) => {
+  pool.query(query, values, (err, result) => {
     if (err) {
       console.error('Error inserting product:', err);
       return res.status(500).json({ error: 'Failed to insert product' });
@@ -211,7 +211,7 @@ router.get('/filter', authenticateToken, (req, res) => {
     }
   }
 
-  db.query(query, params, (err, results) => {
+  pool.query(query, params, (err, results) => {
     if (err) {
       console.error('❌ Error filtering products:', err);
       return res.status(500).json({ error: 'Database error' });
