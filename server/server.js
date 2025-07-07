@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'https://super30-project-ob5u.vercel.app', // your frontend deployed domain
+  'https://super30-project-ob5u.vercel.app/', // your frontend deployed domain
   'http://localhost:3000'                    // for local testing
 ];
 
