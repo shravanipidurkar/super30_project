@@ -16,8 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'https://super30-project-ob5u.vercel.app/', // your frontend deployed domain
-  'http://localhost:3000'                    // for local testing
+  'https://super30-project-ob5u.vercel.app',
+  'http://localhost:3000'
 ];
 
 app.use(cors({
@@ -25,7 +25,14 @@ app.use(cors({
   credentials: true,
 }));
 
-// app.use(cors());
+// ✅ Handle preflight (OPTIONS) requests
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
