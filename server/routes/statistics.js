@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-const db = require('../routes/db');
+const pool = require('../routes/db');
 // DB connection
 // const db = mysql.createConnection({
 //   host: 'localhost',
@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
     WHERE store_id = ?
   `;
 
-  db.query(statsQuery, [storeId], (err, results) => {
+  pool.query(statsQuery, [storeId], (err, results) => {
     if (err) {
       console.error('🔴 Error fetching stats:', err.message);
       return res.status(500).json({ error: 'Database error while fetching statistics' });
@@ -50,7 +50,7 @@ router.get('/by-date', (req, res) => {
     ORDER BY date
   `;
 
-  db.query(sql, [storeId], (err, results) => {
+  pool.query(sql, [storeId], (err, results) => {
     if (err) {
       console.error('🔴 Error fetching sales by date:', err.message);
       return res.status(500).json({ error: 'Database error while fetching sales by date' });
