@@ -6,39 +6,50 @@ import '../css/orders.css';
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [recordsToShow, setRecordsToShow] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
+  const pageSize = 20;
+  const storeId = localStorage.getItem('storeId');
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
+    if (!storeId) {
+      setError('Store ID not found. Please log in again.');
+      setLoading(false);
+      return;
+    }
+
     const fetchOrders = async () => {
+      setLoading(true);
       try {
-        const token = localStorage.getItem('authToken'); // ✅ Fixed token key
-        const storeId = localStorage.getItem('storeId');
-
-        if (!storeId || !token) {
-          setError('Authentication failed. Please log in again.');
-          setLoading(false);
-          return;
-        }
-
         const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/orders`, {
           headers: { Authorization: `Bearer ${token}` },
-          params: { storeId },
+          params: {
+            storeId,
+            page: currentPage,
+            limit: pageSize,
+          },
         });
 
-        setOrders(response.data);
+        setOrders(response.data.orders || []);
+        setTotalPages(response.data.totalPages || 1);
         setLoading(false);
       } catch (err) {
-        console.error('❌ Error fetching orders:', err);
-        setError(err.response?.data?.message || 'Failed to fetch orders.');
+        setError(err.message || 'Failed to load orders');
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [storeId, token, currentPage]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const filteredOrders = orders.filter(order => {
     const search = searchTerm.toLowerCase();
@@ -48,10 +59,8 @@ const Orders = () => {
     );
   });
 
-  const visibleOrders = filteredOrders.slice(0, recordsToShow);
-
   const formatDate = (dateString) => {
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
@@ -65,14 +74,6 @@ const Orders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const token = localStorage.getItem('authToken'); // ✅ Fixed token key
-      const storeId = localStorage.getItem('storeId');
-
-      if (!storeId || !token) {
-        alert('Authentication failed. Please log in again.');
-        return;
-      }
-
       await axios.put(
         `${process.env.REACT_APP_SERVER_URL}/api/orders/${orderId}/status`,
         { status: newStatus, storeId },
@@ -85,13 +86,21 @@ const Orders = () => {
         )
       );
     } catch (err) {
-      console.error('❌ Error updating order status:', err);
-      alert('Failed to update order status.');
+      console.error('Error updating status:', err);
+      alert('❌ Failed to update order status. Please try again.');
     }
   };
 
   const handleAddNewOrder = () => {
     navigate('/addorder');
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
   };
 
   if (loading) return <div className="loading">Loading orders...</div>;
@@ -107,7 +116,7 @@ const Orders = () => {
             type="text"
             placeholder="Search Order ID or Customer"
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
 
@@ -116,11 +125,16 @@ const Orders = () => {
         </button>
       </div>
 
-      <div className="record-buttons">
-        <span>Show:</span>
-        <button onClick={() => setRecordsToShow(25)}>25</button>
-        <button onClick={() => setRecordsToShow(50)}>50</button>
-        <button onClick={() => setRecordsToShow(filteredOrders.length)}>All</button>
+      <div className="pagination-controls">
+        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+          ← Prev
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          Next →
+        </button>
       </div>
 
       <div className="orders-table-container">
@@ -136,7 +150,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {visibleOrders.map(order => (
+            {filteredOrders.map(order => (
               <tr key={order.order_id}>
                 <td>{order.order_id}</td>
                 <td>{formatDate(order.date_ordered)}</td>
