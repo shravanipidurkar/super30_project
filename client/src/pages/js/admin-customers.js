@@ -14,14 +14,29 @@ const Customers = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token'); // ✅ Correct token key
+
+        if (!token) {
+          setError('Authentication token missing. Please log in again.');
+          setLoading(false);
+          return;
+        }
+
         const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/customers`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
+
         setCustomers(response.data);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        if (err.response && err.response.status === 403) {
+          setError('Access denied. You might not be authorized to view this page.');
+        } else {
+          setError(err.message || 'Failed to fetch customers.');
+        }
         setLoading(false);
       }
     };
@@ -43,7 +58,7 @@ const Customers = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-NG', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
