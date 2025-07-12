@@ -31,18 +31,18 @@ const Login = () => {
 
       const { token, user } = response.data;
 
-      // ✅ Store everything needed
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('storeId', user.storeId);      // ✅ required for store filtering
-      localStorage.setItem('userType', user.userType);    // optional
-      localStorage.setItem('userEmail', user.email);      // optional
-      console.log(process.env.REACT_APP_SERVER_URL);
+      // ✅ Store token using correct key
+      localStorage.setItem('token', token); // ✅ Corrected
+      localStorage.setItem('storeId', user.storeId);      
+      localStorage.setItem('userType', user.userType);    
+      localStorage.setItem('userEmail', user.email);      
+
+      console.log('🔐 Token saved:', token);
       alert('Login successful!');
       navigate('/AdminOverview');
     } catch (err) {
       console.error('Login error:', err.response?.data);
       setError(err.response?.data?.message || 'Invalid email or password');
-      console.log(process.env.REACT_APP_SERVER_URL);
     } finally {
       setLoading(false);
     }
