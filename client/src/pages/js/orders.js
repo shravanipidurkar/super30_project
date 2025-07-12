@@ -14,24 +14,25 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken'); // ✅ Fixed token key
         const storeId = localStorage.getItem('storeId');
 
-        if (!storeId) {
-          setError('Store ID not found. Please log in again.');
+        if (!storeId || !token) {
+          setError('Authentication failed. Please log in again.');
           setLoading(false);
           return;
         }
 
         const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/orders`, {
           headers: { Authorization: `Bearer ${token}` },
-          params: { storeId }
+          params: { storeId },
         });
 
         setOrders(response.data);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        console.error('❌ Error fetching orders:', err);
+        setError(err.response?.data?.message || 'Failed to fetch orders.');
         setLoading(false);
       }
     };
@@ -64,17 +65,17 @@ const Orders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken'); // ✅ Fixed token key
       const storeId = localStorage.getItem('storeId');
 
-      if (!storeId) {
-        alert('Store ID missing. Please log in again.');
+      if (!storeId || !token) {
+        alert('Authentication failed. Please log in again.');
         return;
       }
 
       await axios.put(
         `${process.env.REACT_APP_SERVER_URL}/api/orders/${orderId}/status`,
-        { status: newStatus, storeId }, // ✅ send storeId in body
+        { status: newStatus, storeId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -84,8 +85,8 @@ const Orders = () => {
         )
       );
     } catch (err) {
-      console.error('Error updating status:', err);
-      alert('❌ Failed to update order status. Please try again.');
+      console.error('❌ Error updating order status:', err);
+      alert('Failed to update order status.');
     }
   };
 

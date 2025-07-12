@@ -15,14 +15,14 @@ const AddOrder = () => {
   const navigate = useNavigate();
 
   const storeId = localStorage.getItem('storeId');
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken'); // ✅ corrected token key
 
   useEffect(() => {
     if (!storeId) return alert('Store ID missing');
 
     const fetchCustomers = async () => {
       try {
-        const res = await axios.get('${process.env.REACT_APP_SERVER_URL}/api/orders/customers_orders', {
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/orders/customers_orders`, {
           params: { storeId }
         });
         setCustomers(res.data);
@@ -33,7 +33,7 @@ const AddOrder = () => {
 
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('${process.env.REACT_APP_SERVER_URL}/api/orders/products', {
+        const res = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/orders/products`, {
           params: { storeId }
         });
         setProducts(res.data);
@@ -46,7 +46,6 @@ const AddOrder = () => {
     fetchProducts();
   }, [storeId]);
 
-  // ✅ Auto-set price from products list when a product is selected
   useEffect(() => {
     const product = products.find(p => p.product_id === Number(selectedProductId));
     if (product) {
@@ -97,7 +96,7 @@ const AddOrder = () => {
     };
 
     try {
-      const res = await axios.post('${process.env.REACT_APP_SERVER_URL}/api/orders', payload, {
+      const res = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/orders`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -183,9 +182,8 @@ const AddOrder = () => {
             <button type="submit" className="add-order-btn">Submit Order</button>
 
             <button type="button" className="add-order-btn cancel-btn" onClick={() => navigate(-1)}>
-            Cancel
+              Cancel
             </button>
-
           </form>
         </div>
       </div>
