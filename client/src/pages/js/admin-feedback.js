@@ -12,7 +12,7 @@ const Feedback = () => {
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token'); // ✅ changed from authToken to token
         const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/feedback`, {
           headers: { Authorization: `Bearer ${token}` },
         });
