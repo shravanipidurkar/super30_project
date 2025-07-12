@@ -21,13 +21,18 @@ const AddCustomer = () => {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token'); // ✅ Correct token key
+
+      if (!token) {
+        alert('Login expired. Please log in again.');
+        return;
+      }
 
       const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/customers/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` // ✅ FIXED: Added template literal syntax
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(customer)
       });
@@ -36,9 +41,10 @@ const AddCustomer = () => {
 
       if (!response.ok) throw new Error(data.message || 'Failed to add customer');
 
+      alert('✅ Customer added successfully!');
       navigate('/AdminOverview', { state: { tab: 'Customers' } });
     } catch (err) {
-      alert(`Error adding customer: ${err.message}`);
+      alert(`❌ Error adding customer: ${err.message}`);
     }
   };
 
@@ -46,7 +52,12 @@ const AddCustomer = () => {
     <div className="add-customer-wrapper">
       <div className="add-customer-card">
         <div className="left-section">
-          <button className="back-btn" onClick={() => navigate('/AdminOverview', { state: { tab: 'Customers' } })}>←</button>
+          <button
+            className="back-btn"
+            onClick={() => navigate('/AdminOverview', { state: { tab: 'Customers' } })}
+          >
+            ←
+          </button>
           <div className="image-preview">
             <img src={cusImage} alt="Customer" className="home-image" />
             <p>Customer Photo</p>
@@ -55,8 +66,15 @@ const AddCustomer = () => {
 
         <div className="right-section">
           <div className="header-actions">
-            <button className="cancel-btn" onClick={() => navigate('/AdminOverview', { state: { tab: 'Customers' } })}>Cancel</button>
-            <button className="save-btn" onClick={handleSubmit}>Save</button>
+            <button
+              className="cancel-btn"
+              onClick={() => navigate('/AdminOverview', { state: { tab: 'Customers' } })}
+            >
+              Cancel
+            </button>
+            <button className="save-btn" onClick={handleSubmit}>
+              Save
+            </button>
           </div>
 
           <form className="form-body" onSubmit={handleSubmit}>

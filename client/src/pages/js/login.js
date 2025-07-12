@@ -37,7 +37,7 @@ const Login = () => {
       localStorage.setItem('userType', user.userType);    
       localStorage.setItem('userEmail', user.email);      
 
-      console.log('🔐 Token saved:', token);
+      // console.log('🔐 Token saved:', token);
       alert('Login successful!');
       navigate('/AdminOverview');
     } catch (err) {
