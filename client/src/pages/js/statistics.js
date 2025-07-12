@@ -10,8 +10,7 @@ import {
   Tooltip,
   Filler,
 } from 'chart.js';
-import '../css/statistics.css'; 
-//npm install react-chartjs-2 chart.js
+import '../css/statistics.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
@@ -22,6 +21,7 @@ const Statistics = () => {
   const [rawData, setRawData] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const storeId = localStorage.getItem('storeId');
@@ -31,9 +31,22 @@ const Statistics = () => {
 
     const fetchStats = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Login expired. Please log in again.');
+
+        const headers = {
+          Authorization: `Bearer ${token}`
+        };
+
         const [totalRes, dateRes] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_SERVER_URL}/api/statistics`, { params: { storeId } }),
-          axios.get(`${process.env.REACT_APP_SERVER_URL}/api/statistics/by-date`, { params: { storeId } }),
+          axios.get(`${process.env.REACT_APP_SERVER_URL}/api/statistics`, {
+            headers,
+            params: { storeId }
+          }),
+          axios.get(`${process.env.REACT_APP_SERVER_URL}/api/statistics/by-date`, {
+            headers,
+            params: { storeId }
+          }),
         ]);
 
         setTotalSales(totalRes.data.total_sales || 0);
@@ -56,6 +69,7 @@ const Statistics = () => {
         setOfflineSales(offlineMap);
       } catch (err) {
         console.error('❌ Failed to load statistics:', err);
+        setError(err.message || 'Failed to load statistics');
       } finally {
         setLoading(false);
       }
@@ -80,6 +94,7 @@ const Statistics = () => {
   });
 
   if (loading) return <div className="statistics-container">Loading store stats...</div>;
+  if (error) return <div className="statistics-container">❌ {error}</div>;
 
   return (
     <div className="statistics-container">
@@ -124,7 +139,7 @@ const Statistics = () => {
 
       {showRawData && rawData && (
         <div className="raw-data-section">
-          <h4>Sales by Date </h4>
+          <h4>Sales by Date</h4>
           <pre>{JSON.stringify(rawData, null, 2)}</pre>
         </div>
       )}
