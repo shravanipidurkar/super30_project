@@ -1,35 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2');
 const pool = require('../routes/db');
 
-// ✅ DB connection
-// const db = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: '',
-//   database: 'e-commerce-db1',
-// });
-
-// ✅ GET: all orders for a store
+// ✅ GET: all orders for a store (with pagination)
 router.get('/', (req, res) => {
   const storeId = req.query.storeId;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const offset = (page - 1) * limit;
+
   if (!storeId) return res.status(400).json({ error: 'storeId is required in query' });
 
-  const sql = `
+  const ordersSql = `
     SELECT o.order_id, o.date_ordered, o.total_amount, o.status, c.customer_name
     FROM orders o
     JOIN customers c ON o.customer_id = c.customer_id
     WHERE c.store_id = ?
     ORDER BY o.date_ordered DESC
+    LIMIT ? OFFSET ?
   `;
 
-  pool.query(sql, [storeId], (err, results) => {
+  const countSql = `
+    SELECT COUNT(*) AS total FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    WHERE c.store_id = ?
+  `;
+
+  pool.query(ordersSql, [storeId, limit, offset], (err, orders) => {
     if (err) {
-      console.error('🔴 Error fetching orders:', err.message);
+      console.error('🔴 Error fetching paginated orders:', err.message);
       return res.status(500).json({ error: 'Database error while fetching orders' });
     }
-    res.json(results);
+
+    pool.query(countSql, [storeId], (countErr, countResult) => {
+      if (countErr) {
+        console.error('🔴 Error counting orders:', countErr.message);
+        return res.status(500).json({ error: 'Database error while counting orders' });
+      }
+
+      const total = countResult[0].total;
+      const totalPages = Math.ceil(total / limit);
+
+      res.json({ orders, total, totalPages, currentPage: page });
+    });
   });
 });
 
@@ -53,18 +66,8 @@ router.post('/', (req, res) => {
     }
 
     const orderId = result.insertId;
-
-    const itemSql = `
-      INSERT INTO order_items (order_id, product_id, quantity, store_id)
-      VALUES ?
-    `;
-
-    const values = items.map(item => [
-      orderId,
-      item.product_id,
-      item.quantity,
-      store_id
-    ]);
+    const itemSql = `INSERT INTO order_items (order_id, product_id, quantity, store_id) VALUES ?`;
+    const values = items.map(item => [orderId, item.product_id, item.quantity, store_id]);
 
     pool.query(itemSql, [values], (itemErr) => {
       if (itemErr) {
@@ -80,7 +83,7 @@ router.post('/', (req, res) => {
   });
 });
 
-// ✅ PUT: update order status and insert into sales if Delivered
+// ✅ PUT: update order status and record sales if Delivered
 router.put('/:orderId/status', (req, res) => {
   const { orderId } = req.params;
   const { status, storeId } = req.body;
@@ -112,12 +115,7 @@ router.put('/:orderId/status', (req, res) => {
 
     // ✅ Step 1: Get order items
     const fetchItemsSql = `
-      SELECT 
-        oi.product_id,
-        oi.quantity,
-        p.price AS price,
-        o.customer_id,
-        o.date_ordered
+      SELECT oi.product_id, oi.quantity, p.price AS price, o.customer_id, o.date_ordered
       FROM order_items oi
       JOIN orders o ON oi.order_id = o.order_id
       JOIN customers c ON o.customer_id = c.customer_id
@@ -185,7 +183,7 @@ router.get('/products', (req, res) => {
   });
 });
 
-// ✅ NEW: GET customers filtered by storeId
+// ✅ GET: customers for a store (for dropdown)
 router.get('/customers_orders', (req, res) => {
   const storeId = req.query.storeId;
   if (!storeId) return res.status(400).json({ error: 'storeId is required in query' });
@@ -197,6 +195,7 @@ router.get('/customers_orders', (req, res) => {
       console.error('🔴 Error fetching customers:', err.message);
       return res.status(500).json({ error: 'Database error while fetching customers' });
     }
+
     res.json(results);
   });
 });
