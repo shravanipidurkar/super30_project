@@ -3,43 +3,41 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-
 const productsRoute = require('./routes/products');
 const customerRoute = require('./routes/customers');
 const ordersRoute = require('./routes/orders');
 const customerORoute = require('./routes/customers_orders');
 const authRoute = require('./routes/auth');
 const feedbackRoute = require('./routes/feedback');
-const statisticsRoutes = require('./routes/statistics');
+const statisticsRoutes = require('./routes/statistics'); 
 const overview = require('./routes/overview');
 const stores_backup = require('./routes/stores_backup');
 const customerAuthRoutes = require('./routes/cus_auth');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// ✅ CORS Configuration
 const allowedOrigins = [
   'https://super30-project-ob5u.vercel.app',
   'http://localhost:3000'
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: allowedOrigins,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
+}));
 
-app.use(cors(corsOptions));
+// ✅ Handle preflight (OPTIONS) requests
+// app.options('*', cors({
+//   origin: allowedOrigins,
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
-// ✅ Handle preflight requests (OPTIONS) globally
-app.options('*', cors(corsOptions));
-
-// ✅ Middleware
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// ✅ Routes
 app.use('/api/products', productsRoute);
 app.use('/api/customers', customerRoute);
 app.use('/api/orders', ordersRoute);
@@ -51,11 +49,10 @@ app.use('/api/overview', overview);
 app.use('/api/customer/auth', customerAuthRoutes);
 app.use('/api', stores_backup);
 
-// ✅ Run locally only
-const PORT = process.env.PORT || 5000;
+// ✅ Run server only in local development
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
   });
 }
 
