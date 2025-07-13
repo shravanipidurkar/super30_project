@@ -13,7 +13,7 @@ const Feedback = () => {
   const fetchFeedback = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token'); // ✅ fixed key
+      const token = localStorage.getItem('Token');
 
       const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/feedback`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -27,7 +27,7 @@ const Feedback = () => {
 
       setFeedbacks(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load feedback');
+      setError(err.message || 'Failed to load feedback');
     } finally {
       setLoading(false);
     }
@@ -39,9 +39,7 @@ const Feedback = () => {
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+      day: 'numeric', month: 'short', year: 'numeric'
     });
   };
 
@@ -61,23 +59,18 @@ const Feedback = () => {
           type="text"
           placeholder="Search by customer, product or review"
           value={searchTerm}
-          onChange={(e) => {
+          onChange={e => {
             setPage(1);
             setSearchTerm(e.target.value);
           }}
         />
-        <select
-          value={filterRating}
-          onChange={(e) => {
-            setPage(1);
-            setFilterRating(e.target.value);
-          }}
-        >
+        <select value={filterRating} onChange={e => {
+          setPage(1);
+          setFilterRating(e.target.value);
+        }}>
           <option value="all">All Ratings</option>
-          {[5, 4, 3, 2, 1].map((r) => (
-            <option key={r} value={r}>
-              {r} Stars
-            </option>
+          {[5, 4, 3, 2, 1].map(r => (
+            <option key={r} value={r}>{r} Stars</option>
           ))}
         </select>
       </div>
@@ -93,14 +86,12 @@ const Feedback = () => {
           </tr>
         </thead>
         <tbody>
-          {feedbacks.map((fb) => (
+          {feedbacks.map(fb => (
             <tr key={fb.feedback_id}>
               <td>{formatDate(fb.review_date)}</td>
               <td>{fb.customer_name}</td>
               <td>{fb.product_name}</td>
-              <td>
-                {renderStars(fb.rating)} <span>({fb.rating})</span>
-              </td>
+              <td>{renderStars(fb.rating)} <span>({fb.rating})</span></td>
               <td>{fb.review_description}</td>
             </tr>
           ))}
@@ -108,11 +99,13 @@ const Feedback = () => {
       </table>
 
       <div className="pagination">
-        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
           Previous
         </button>
         <span>Page {page}</span>
-        <button onClick={() => setPage((p) => p + 1)}>Next</button>
+        <button onClick={() => setPage(p => p + 1)}>
+          Next
+        </button>
       </div>
     </div>
   );
