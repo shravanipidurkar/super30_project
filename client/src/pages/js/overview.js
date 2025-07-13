@@ -25,7 +25,7 @@ const Overview = () => {
   });
 
   const storeId = localStorage.getItem('storeId');
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('Token');
 
   useEffect(() => {
     const fetchOverview = async () => {
