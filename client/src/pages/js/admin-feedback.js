@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../css/admin-feedback.css';
+import { useNavigate } from 'react-router-dom';
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -12,13 +13,20 @@ const Feedback = () => {
   const [error, setError] = useState(null);
 
   const pageSize = 10;
+  const navigate = useNavigate();
+  const API = process.env.REACT_APP_SERVER_URL || 'http://localhost:5000';
 
   const fetchFeedback = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token'); // 🔑 Ensure lowercase key
 
-      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/feedback`, {
+      if (!token) {
+        alert('You are not logged in. Redirecting to login.');
+        return navigate('/login');
+      }
+
+      const response = await axios.get(`${API}/api/feedback`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: searchTerm,
@@ -28,11 +36,18 @@ const Feedback = () => {
         },
       });
 
-      setFeedbacks(response.data.feedbacks);
-      const totalCount = response.data.total || 0;
-      setTotalPages(Math.ceil(totalCount / pageSize));
+      const { feedbacks, total } = response.data;
+      setFeedbacks(feedbacks || []);
+      setTotalPages(Math.ceil((total || 0) / pageSize));
+      setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load feedback');
+      if (err.response?.status === 403 || err.response?.status === 401) {
+        alert('Session expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
+        setError(err.response?.data?.message || 'Failed to load feedback');
+      }
     } finally {
       setLoading(false);
     }
