@@ -23,6 +23,7 @@ const allowedOrigins = [
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // ✅ Handle preflight (OPTIONS) requests
