@@ -7,27 +7,32 @@ const Feedback = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRating, setFilterRating] = useState('all');
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const pageSize = 10;
 
   const fetchFeedback = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('Token');
+      const token = localStorage.getItem('token');
 
       const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/feedback`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search: searchTerm,
-          rating: filterRating,
+          rating: filterRating === 'all' ? '' : filterRating,
           page,
-          limit: 10,
+          pageSize,
         },
       });
 
-      setFeedbacks(response.data);
+      setFeedbacks(response.data.feedbacks);
+      const totalCount = response.data.total || 0;
+      setTotalPages(Math.ceil(totalCount / pageSize));
     } catch (err) {
-      setError(err.message || 'Failed to load feedback');
+      setError(err.response?.data?.message || 'Failed to load feedback');
     } finally {
       setLoading(false);
     }
@@ -35,6 +40,7 @@ const Feedback = () => {
 
   useEffect(() => {
     fetchFeedback();
+    // eslint-disable-next-line
   }, [searchTerm, filterRating, page]);
 
   const formatDate = (dateString) => {
@@ -45,6 +51,22 @@ const Feedback = () => {
 
   const renderStars = (rating) => {
     return <span className="stars">{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</span>;
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => setPage(i)}
+          className={page === i ? 'active' : ''}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pages;
   };
 
   if (loading) return <div className="loading">Loading feedback...</div>;
@@ -98,12 +120,13 @@ const Feedback = () => {
         </tbody>
       </table>
 
+      {/* Pagination Controls */}
       <div className="pagination">
         <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
           Previous
         </button>
-        <span>Page {page}</span>
-        <button onClick={() => setPage(p => p + 1)}>
+        {renderPagination()}
+        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
           Next
         </button>
       </div>
